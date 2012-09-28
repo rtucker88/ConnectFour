@@ -1,4 +1,4 @@
 ConnectFour
 ===========
 
-AI Bot for the ConnectFour game.
+AI Bot for the ConnectFour game. Really Awesome.
