@@ -3,6 +3,7 @@ test your code (it will import this file and call pick_move
 repeatedly)."""
 
 import random
+import copy
 
 ROWS = 6
 COLS = 7
@@ -54,9 +55,8 @@ class yourbot(object):
         col = random.choice(range(len(board)))
         while len(board[col]) >= ROWS:
             col = random.choice(range(len(board)))
-        
-	print self.static_evaluator(board, player_color)	
-        return col
+        self.next_board_states(board, player_color)
+	return col
 
     def static_evaluator(self, board, player_color):
 	"""Checks the state of each four blocks in a valid move and returns the 	sum of this board state"""
@@ -173,6 +173,23 @@ class yourbot(object):
                 right_diagonal_sum += self.chip_value(chips)
 
 	return right_diagonal_sum
+
+    def next_board_states(self, board, player_color):
+	# Gets the next possible board states and returns them in a list.
+	results = []
+
+	# Check if a column is full if not, pass in the state
+	for state in range (COLS):
+	    if len(board[state]) < ROWS:
+		# Add the chip to the board and then add it to the results
+		new_state = copy.deepcopy(board)
+		new_state[state].append(player_color)
+	        print 'New state rep: ' + repr(new_state)		
+		results.append(new_state)
+	
+	print results
+
+	return results
 
 def make_callback():
     """Instantiates your bot object and returns a callback."""
