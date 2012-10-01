@@ -72,10 +72,10 @@ class yourbot(object):
 	print 'Check right diagonal: ' + repr(self.check_right_diagonal(board))
 	print 'Check left diagonal: ' + repr(self.check_left_diagonal(board))
 
-	if play_color == 'R':
-	    total_sum += RED_MOVE
+	if player_color == 'R':
+	    total_sum += self.RED_MOVE
 	else:
-	    total_sum += BLACK_MOVE
+	    total_sum += self.BLACK_MOVE
 
 	return total_sum
 
@@ -90,19 +90,19 @@ class yourbot(object):
 		number_of_black += 1
 	
 	if (number_of_red > 0 and number_of_black > 0) or (number_of_red == 0 and number_of_black == 0):
-	    return EMPTY_OR_MIXTURE
+	    return self.EMPTY_OR_MIXTURE
 	elif number_of_red == 1:
-	    return SINGLE_RED
+	    return self.SINGLE_RED
         elif number_of_black == 1:
-            return SINGLE_BLACK
+            return self.SINGLE_BLACK
         elif number_of_red == 2:
-            return TWO_RED
+            return self.TWO_RED
         elif number_of_black == 2:
-            return TWO_BLACK
+            return self.TWO_BLACK
         elif number_of_red == 3:
-            return THREE_RED
+            return self.THREE_RED
         else:
-	    return THREE_BLACK
+	    return self.THREE_BLACK
 
     def check_vertical(self, board):
 	#Go through every vertical possibility and calculate the static evaluation
