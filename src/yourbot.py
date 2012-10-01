@@ -77,6 +77,11 @@ class yourbot(object):
 	else:
 	    total_sum += self.BLACK_MOVE
 
+	if total_sum < 2:
+	    total_sum = 2
+	elif total_sum > 1022:
+	    total_sum = 1022
+
 	return total_sum
 
     def chip_value(self, chip_set):
@@ -101,8 +106,12 @@ class yourbot(object):
             return self.TWO_BLACK
         elif number_of_red == 3:
             return self.THREE_RED
-        else:
+        elif number_of_black == 3:
 	    return self.THREE_BLACK
+        elif number_of_red == 4:
+            return self.RED_WINS
+	else:
+	    return self.BLACK_WINS
 
     def check_vertical(self, board):
 	#Go through every vertical possibility and calculate the static evaluation
