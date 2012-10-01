@@ -17,6 +17,8 @@ class yourbot(object):
     TWO_RED = -10
     THREE_BLACK = 50
     THREE_RED = -50
+    RED_MOVE = -16
+    BLACK_MOVE = 16
 
     """Your implementation goes here. You can store state between
     moves by accessing "self"; initialize in __init__ (constructor)
@@ -70,6 +72,11 @@ class yourbot(object):
 	print 'Check right diagonal: ' + repr(self.check_right_diagonal(board))
 	print 'Check left diagonal: ' + repr(self.check_left_diagonal(board))
 
+	if play_color == 'R':
+	    total_sum += RED_MOVE
+	else:
+	    total_sum += BLACK_MOVE
+
 	return total_sum
 
     def chip_value(self, chip_set):
@@ -83,19 +90,19 @@ class yourbot(object):
 		number_of_black += 1
 	
 	if (number_of_red > 0 and number_of_black > 0) or (number_of_red == 0 and number_of_black == 0):
-	    return 0
+	    return EMPTY_OR_MIXTURE
 	elif number_of_red == 1:
-	    return -1
+	    return SINGLE_RED
         elif number_of_black == 1:
-            return 1
+            return SINGLE_BLACK
         elif number_of_red == 2:
-            return -10
+            return TWO_RED
         elif number_of_black == 2:
-            return 10
+            return TWO_BLACK
         elif number_of_red == 3:
-            return -50
+            return THREE_RED
         else:
-	    return 50
+	    return THREE_BLACK
 
     def check_vertical(self, board):
 	#Go through every vertical possibility and calculate the static evaluation
