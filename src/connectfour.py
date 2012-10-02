@@ -13,8 +13,8 @@ PLAYER_COLORS = ['B', 'R']
 INV_COLORS = {c:i for i, c in enumerate(PLAYER_COLORS)}
 
 def main():
-    play(yourbot.make_callback(), human_player_callback)
-
+#    play(yourbot.make_callback(), human_player_callback)
+     play(yourbot.make_callback(), yourbot.make_callback())
 def check_windraw(board):
     def check_same(points):
         result_set = set()
