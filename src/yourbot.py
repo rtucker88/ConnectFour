@@ -61,17 +61,21 @@ class yourbot(object):
 
         return: A column number 0-6 which is not already full."""
         self.my_color = player_color
-	self.best_move = 0
+	self.best_move = None 
 	
 	self.moves += 1
 
 	start = time.clock()
 
-        col = self.minimax_search(board, player_color, False, 5)
+	self.number_searched = 0
+	self.number_skipped = 0
+	
+	col = self.minimax_search(board, player_color, False, 5)
 
 	elapsed = (time.clock() - start)
 
-	print 'Took ' + repr(elapsed) + ' seconds.'
+	print 'Took ' + repr(elapsed) + ' seconds. Searched ' + repr(self.number_searched) + ' moves. Skipped ' + repr(self.number_skipped) + ' moves.\n'
+	print 'Column: ' + repr(col) + '\n'
 	return col
 
     def static_evaluator(self, board, player_color):
@@ -229,12 +233,12 @@ class yourbot(object):
 
 	# Check if a column is full if not, pass in the state
 	for state in range (COLS):
-	    if len(board[state]) < ROWS:
+	    if len(board[state]) < ROWS - 1:
 		# Add the chip to the board and then add it to the results
 		new_state = copy.deepcopy(board)
 		new_state[state].append(player_color)
 	    else:
-		new_state = copy.deepcopy(board) # Empty list if the column is filled (Going to use for quickly finding out which column the move is in)
+		new_state = [] # Empty list if the column is filled (Going to use for quickly finding out which column the move is in)
 		
 	    results.append(new_state)
 	return results
@@ -244,7 +248,7 @@ class yourbot(object):
 	"""if with_alpha_beta:
 
 	else:"""
-	self.minimax_no_alpha_beta(board, player_color, 0, depth_limit)	    
+	print 'Best score: ' + repr(self.minimax_no_alpha_beta(board, player_color, 0, depth_limit)) + '\n'
 
 	return self.best_move
 
@@ -275,19 +279,27 @@ class yourbot(object):
 	        new_color = 'B'
 
 	    current_move = 0 # Tracks the move column
+
 	    for move in self.next_board_states(board, current_color):
+		# Increment the number searched
+		self.number_searched += 1
+
+		if len(move) == 0: # Board was full where we were trying to place a chip
+		    self.number_skipped += 1
+		    current_move += 1
+		    continue
 
 		# Get a board for each next play state and set the next color
 	        score = self.minimax_no_alpha_beta(move, new_color, depth + 1, depth_limit)
-		
+	
 		score_changed = False	
 		if new_color == self.my_color: # Max case
 		    if self.my_color == 'R':
-    		        if score >= best_score:
+    		        if score > best_score:
 		            best_score = score
 			    scored_changed = True
    		    else: # Black
-			if score <= best_score:
+			if score > best_score:
 			    best_score = score
 			    score_changed = True
 		    
@@ -295,11 +307,11 @@ class yourbot(object):
 			self.best_move = current_move 	
 		else:				# Min case
 		    if self.my_color == 'B':
-                        if score >= best_score:
+                        if score < best_score:
 		            best_score = score
 			    score_changed = True
 		    else: # Red
-			if score <= best_score:
+			if score < best_score:
 			    best_score = score
 			    score_changed = True
 
@@ -307,6 +319,13 @@ class yourbot(object):
 		        self.best_move = current_move
 
 		current_move += 1
+
+	    # Need an arbitrary selection in case we get in a drawn/unwinnable state
+	    if self.best_move == None:
+		for slot in range(COLS):
+		    if len(board[slot]) < ROWS:
+			self.best_move = slot
+
 	    return best_score
 
 def make_callback():
