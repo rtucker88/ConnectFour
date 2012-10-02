@@ -266,6 +266,9 @@ class yourbot(object):
 	   else:
 		best_score = self.RED_WINS
 
+	if best_score == self.static_evaluator(board, current_color):
+	    return best_score
+
 	# At the depth limit evaluate and return
 	if depth == depth_limit:
 	    sum = self.static_evaluator(board, current_color)
@@ -286,11 +289,10 @@ class yourbot(object):
 
 		if len(move) == 0: # Board was full where we were trying to place a chip
 		    self.number_skipped += 1
-		    current_move += 1
-		    continue
-
-		# Get a board for each next play state and set the next color
-	        score = self.minimax_no_alpha_beta(move, new_color, depth + 1, depth_limit)
+		    score = best_score
+		else:
+   		    # Get a board for each next play state and set the next color
+	            score = self.minimax_no_alpha_beta(move, new_color, depth + 1, depth_limit)
 	
 		score_changed = False	
 		if new_color == self.my_color: # Max case
@@ -299,7 +301,7 @@ class yourbot(object):
 		            best_score = score
 			    scored_changed = True
    		    else: # Black
-			if score > best_score:
+			if score < best_score:
 			    best_score = score
 			    score_changed = True
 		    
@@ -307,7 +309,7 @@ class yourbot(object):
 			self.best_move = current_move 	
 		else:				# Min case
 		    if self.my_color == 'B':
-                        if score < best_score:
+                        if score > best_score:
 		            best_score = score
 			    score_changed = True
 		    else: # Red
