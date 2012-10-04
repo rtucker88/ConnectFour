@@ -70,7 +70,7 @@ class yourbot(object):
 	self.number_searched = 0
 	self.number_skipped = 0
 	
-	col = self.minimax_search(board, player_color, False, 5)
+	col = self.minimax_search(board, player_color, False, 6)
 
 	elapsed = (time.clock() - start)
 
@@ -245,10 +245,10 @@ class yourbot(object):
 
     def minimax_search(self, board, player_color, with_alpha_beta, depth_limit):
 
-	"""if with_alpha_beta:
-
-	else:"""
-	print 'Best score: ' + repr(self.minimax_no_alpha_beta(board, player_color, 0, depth_limit)) + '\n'
+	if with_alpha_beta:
+            print 'Best score: ' + repr(self.minimax_alpha_beta(board, player_color, 0, depth_limit, self.RED_WINS, self.BLACK_WINS)) + '\n'
+	else:
+	    print 'Best score: ' + repr(self.minimax_no_alpha_beta(board, player_color, 0, depth_limit)) + '\n'
 
 	return self.best_move
 
@@ -266,6 +266,7 @@ class yourbot(object):
 	   else:
 		best_score = self.RED_WINS
 
+	# Found a terminal state
 	if best_score == self.static_evaluator(board, current_color):
 	    return best_score
 
@@ -293,7 +294,7 @@ class yourbot(object):
 		else:
    		    # Get a board for each next play state and set the next color
 	            score = self.minimax_no_alpha_beta(move, new_color, depth + 1, depth_limit)
-	
+
 		score_changed = False	
 		if new_color == self.my_color: # Max case
 		    if self.my_color == 'R':
@@ -316,6 +317,98 @@ class yourbot(object):
 			if score < best_score:
 			    best_score = score
 			    score_changed = True
+
+		    if depth == 0 and score_changed:
+		        self.best_move = current_move
+
+	        current_move += 1
+
+	    # Need an arbitrary selection in case we get in a drawn/unwinnable state
+	    if self.best_move == None:
+		for slot in range(COLS):
+		    if len(board[slot]) < ROWS:
+			self.best_move = slot
+
+	    return best_score
+
+    def minimax_alpha_beta(self, board, current_color, depth, depth_limit, alpha, beta):
+	
+	# Find the "Infinity" value	
+	if self.my_color != current_color:
+	    if self.my_color == 'R':
+		best_score = self.RED_WINS
+	    else:
+		best_score = self.BLACK_WINS
+	else:
+	   if self.my_color == 'R':
+		best_score = self.BLACK_WINS
+	   else:
+		best_score = self.RED_WINS
+
+	# Found a terminal state
+	if best_score == self.static_evaluator(board, current_color):
+	    return best_score
+
+	# At the depth limit evaluate and return
+	if depth == depth_limit:
+	    sum = self.static_evaluator(board, current_color)
+	    return sum
+
+	else: # Need to go deeper
+	    # Set the next player's color
+	    if current_color == 'B':
+	        new_color = 'R'
+	    else:
+	        new_color = 'B'
+
+	    current_move = 0 # Tracks the move column
+
+	    for move in self.next_board_states(board, current_color):
+		# Increment the number searched
+		self.number_searched += 1
+
+		if len(move) == 0: # Board was full where we were trying to place a chip
+		    self.number_skipped += 1
+		    score = best_score
+		else:
+   		    # Get a board for each next play state and set the next color
+		    # This is essentially both the alpha and beta's new score
+	            score = self.minimax_alpha_beta(move, new_color, depth + 1, depth_limit, alpha, beta)
+	
+		score_changed = False	
+		if new_color == self.my_color: # Max case
+		    if self.my_color == 'R':
+    		        if score > alpha:
+		            alpha = score
+			    best_score = score
+			    scored_changed = True
+   		    else: # Black
+			if score < beta:
+			    beta = score
+			    best_score = score
+			    score_changed = True
+		    
+                    if beta <= alpha:
+			#print 'Breaking\n'
+			break
+
+                    if depth == 0 and score_changed:
+			self.best_move = current_move 	
+		else:				# Min case
+		    if self.my_color == 'B':
+                        if score > alpha:
+		            alpha = score
+			    best_score = score
+			    score_changed = True
+		    else: # Red
+			if score < beta:
+			    beta = score
+			    best_score = score
+			    score_changed = True
+
+		    if beta <= alpha:
+			#print 'Breaking\n'
+			break
 
 		    if depth == 0 and score_changed:
 		        self.best_move = current_move
